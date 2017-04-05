@@ -8,7 +8,7 @@ import java.util.*;
  * Created by nagasaty on 3/28/17.
  */
 
-public class Encoder {
+public class encoder {
 //    private static String inputFile = "sample_input_small.txt";
     private static String inputFile = "../sample2/sample_input_large.txt";
     
@@ -16,6 +16,9 @@ public class Encoder {
     private static String outputFileCodeTable = "code_table.txt";
     
     public static void main(String[] args) throws FileNotFoundException {
+        if(args.length != 1){
+            System.err.println("Args length should be 1.. found..: "+args.length);
+        }else inputFile = args[0];
         HashMap<Integer, Integer> fmap = new HashMap<>();
         Scanner sc = new Scanner(new FileInputStream(inputFile));
         int key;
@@ -28,7 +31,7 @@ public class Encoder {
         System.out.println("Freq Map Built");
         TreeNode root = null;
         
-        int iterations = 25;
+        int iterations = 2;
         long start, end;
         
         start = System.currentTimeMillis();
@@ -36,21 +39,21 @@ public class Encoder {
             root = constructHuffmanTree(fmap, 2);
         }
         end = System.currentTimeMillis();
-        System.out.println("Time Taken by 2 4-ary Heap:"+(end-start));
+        System.out.println("Time Taken by 4-ary Heap:"+(end-start)/1000.0 + " seconds");
         
         start = System.currentTimeMillis();
         for (int i = 0; i < iterations; i++) {
             root = constructHuffmanTree(fmap, 1);
         }
         end = System.currentTimeMillis();
-        System.out.println("Time Taken by 1 Binary Heap:"+(end-start));
+        System.out.println("Time Taken by Binary Heap:"+(end-start)/1000.0 + " seconds");
         
 //        start = System.currentTimeMillis();
 //        for (int i = 0; i < iterations; i++) {
 //            root = constructHuffmanTree(fmap, 0);
 //        }
 //        end = System.currentTimeMillis();
-//        System.out.println("Time Taken by 0 pairing Heap:"+(end-start));
+//        System.out.println("Time Taken by pairing Heap:"+(end-start)/1000.0 + " seconds");
         System.out.println("Huffman Tree Built");
 
         Map<Integer, String> encodingMap = getMap(root);

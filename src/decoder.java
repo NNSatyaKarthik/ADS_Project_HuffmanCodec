@@ -7,7 +7,7 @@ import java.util.Scanner;
 /**
  * Created by nagasaty on 3/28/17.
  */
-public class Decoder {
+public class decoder {
     
     private static String inputFileBin = "encoded.bin";
     private static String inputFileCodeTable = "code_table.txt";
@@ -16,6 +16,14 @@ public class Decoder {
 //    private static String outputFileExpected = "../sample2/sample_input_large.txt";
     
     public static void main(String[] args) throws FileNotFoundException {
+        // TODO make this 2.. instead of three... adn remove the last argument.. and consistency check mehtod.
+        if(args.length != 3){
+            System.err.println("Expected args length of 2.. but found..: "+args.length);
+        }else{
+            inputFileBin = args[0];
+            inputFileCodeTable = args[1];
+            outputFileExpected = args[2];
+        }
         HashMap<String, Integer> encodingMap = new HashMap<>();
         System.out.println("Building Map of Codec to Int..");
         Scanner sc = new Scanner(new FileInputStream(inputFileCodeTable));
