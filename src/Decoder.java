@@ -12,8 +12,9 @@ public class Decoder {
     private static String inputFileBin = "encoded.bin";
     private static String inputFileCodeTable = "code_table.txt";
     private static String outputFile = "decoded.txt";
-    private static String outputFileExpected = "../sample2/sample_input_large.txt";
-
+    private static String outputFileExpected = "../sample1/sample_input_small.txt";
+//    private static String outputFileExpected = "../sample2/sample_input_large.txt";
+    
     public static void main(String[] args) throws FileNotFoundException {
         HashMap<String, Integer> encodingMap = new HashMap<>();
         System.out.println("Building Map of Codec to Int..");

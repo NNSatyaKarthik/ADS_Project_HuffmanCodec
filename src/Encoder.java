@@ -26,7 +26,31 @@ public class Encoder {
         sc.close();
 //        for(int keyy : fmap.keySet()) System.out.format("%d %d\n", keyy, fmap.get(keyy));
         System.out.println("Freq Map Built");
-        TreeNode root = constructHuffmanTree(fmap);
+        TreeNode root = null;
+        
+        int iterations = 25;
+        long start, end;
+        
+        start = System.currentTimeMillis();
+        for (int i = 0; i < iterations; i++) {
+            root = constructHuffmanTree(fmap, 2);
+        }
+        end = System.currentTimeMillis();
+        System.out.println("Time Taken by 2 4-ary Heap:"+(end-start));
+        
+        start = System.currentTimeMillis();
+        for (int i = 0; i < iterations; i++) {
+            root = constructHuffmanTree(fmap, 1);
+        }
+        end = System.currentTimeMillis();
+        System.out.println("Time Taken by 1 Binary Heap:"+(end-start));
+        
+//        start = System.currentTimeMillis();
+//        for (int i = 0; i < iterations; i++) {
+//            root = constructHuffmanTree(fmap, 0);
+//        }
+//        end = System.currentTimeMillis();
+//        System.out.println("Time Taken by 0 pairing Heap:"+(end-start));
         System.out.println("Huffman Tree Built");
 
         Map<Integer, String> encodingMap = getMap(root);
@@ -117,27 +141,39 @@ public class Encoder {
         prefixBuilder.deleteCharAt(prefixBuilder.length()-1);
     }
 
-    private static TreeNode constructHuffmanTree(HashMap<Integer, Integer> fmap) {
-        PriorityQueue<TreeNode> queue = new PriorityQueue<>(new Comparator<TreeNode>() {
-            @Override
-            public int compare(TreeNode o1, TreeNode o2) {
-                return (o1.data < o2.data)?-1:(o1.data == o2.data)?0:1;
+    private static TreeNode constructHuffmanTree(HashMap<Integer, Integer> fmap, int typeOfHeap) {
+//        Heaps<TreeNode> heap = new PriorityQueueHeap<>();
+        Heaps<TreeNode> heap = null;
+        switch (typeOfHeap){
+            case 0: {
+                heap = new PairingHeap<>();
+                break;
             }
-        });
+            case 1:{
+                heap = new DaryHeap<TreeNode>(2);
+                break;
+            }
+            case 2:{
+                heap = new DaryHeap<TreeNode>(4);
+                break;
+            }
+            default: break;
+        }
+        
         TreeNode temp, left, right;
         for(int key: fmap.keySet()){
             temp = new LeafNode(fmap.get(key), key);
-            queue.offer(temp);
+            heap.offer(temp);
         }
         
-        while(!queue.isEmpty() && queue.size() != 1){
-            left = queue.poll();
-            right = queue.poll();
+        while(!heap.isEmpty() && heap.size() != 1){
+            left = heap.poll();
+            right = heap.poll();
             temp = new TreeNode(left.data + right.data);
             temp.left = left;
             temp.right = right;
-            queue.offer(temp);
+            heap.offer(temp);
         }
-        return queue.peek();
+        return heap.peek();
     }
 }
