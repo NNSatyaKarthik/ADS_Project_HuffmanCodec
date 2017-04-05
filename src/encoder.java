@@ -11,7 +11,6 @@ import java.util.*;
 public class encoder {
 //    private static String inputFile = "sample_input_small.txt";
     private static String inputFile = "../sample2/sample_input_large.txt";
-    
     private static String outputFileBin = "encoded.bin";
     private static String outputFileCodeTable = "code_table.txt";
     
@@ -31,40 +30,52 @@ public class encoder {
         System.out.println("Freq Map Built");
         TreeNode root = null;
         
-        int iterations = 2;
+        int iterations = 1;
         long start, end;
+
+//        System.out.println("Time Taken by 4-ary Heap:....");
+//        start = System.currentTimeMillis();
+//        for (int i = 0; i < iterations; i++) {
+//            root = constructHuffmanTree(fmap, 2);
+//        }
+//        end = System.currentTimeMillis();
+//        System.out.println((end-start)/(1000.0*iterations) + " seconds");
         
+        System.out.print("Time Taken by 4-ary CACHEOPTIMIZED Heap:...");
         start = System.currentTimeMillis();
         for (int i = 0; i < iterations; i++) {
-            root = constructHuffmanTree(fmap, 2);
+            root = constructHuffmanTree(fmap, 3);
         }
         end = System.currentTimeMillis();
-        System.out.println("Time Taken by 4-ary Heap:"+(end-start)/1000.0 + " seconds");
+        System.out.println((end-start)/(1000.0*iterations) + " seconds");
+
+//        System.out.println("Time Taken by Binary Heap:...");
+//        start = System.currentTimeMillis();
+//        for (int i = 0; i < iterations; i++) {
+//            root = constructHuffmanTree(fmap, 1);
+//        }
+//        end = System.currentTimeMillis();
+//        System.out.println((end-start)/(1000.0*iterations) + " seconds");
         
-        start = System.currentTimeMillis();
-        for (int i = 0; i < iterations; i++) {
-            root = constructHuffmanTree(fmap, 1);
-        }
-        end = System.currentTimeMillis();
-        System.out.println("Time Taken by Binary Heap:"+(end-start)/1000.0 + " seconds");
-        
+//        System.out.print("Time Taken by pairing Heap:...");
 //        start = System.currentTimeMillis();
 //        for (int i = 0; i < iterations; i++) {
 //            root = constructHuffmanTree(fmap, 0);
 //        }
 //        end = System.currentTimeMillis();
-//        System.out.println("Time Taken by pairing Heap:"+(end-start)/1000.0 + " seconds");
+//        System.out.println((end-start)/(1000.0*iterations) + " seconds");
+        
+        
         System.out.println("Huffman Tree Built");
 
         Map<Integer, String> encodingMap = getMap(root);
-        System.out.println("Writing Binary and CodeTable.txt to the path");
+        System.out.print("Writing Binary and CodeTable.txt to the path.....");
         writeToOutputFile(inputFile, outputFileBin, outputFileCodeTable, encodingMap);
         System.out.println("Encoding Done!");
     }
 
     private static Boolean writeToOutputFile(String inputFile, String outputFileBin, String outputFileCodeTable, Map<Integer, String> encodingMap) throws FileNotFoundException {
-        if (!writeCodecTxt(outputFileCodeTable, encodingMap) && !writeBinaryFile(inputFile, outputFileBin, encodingMap)) return false;
-        return true;
+        return !(!writeCodecTxt(outputFileCodeTable, encodingMap) && !writeBinaryFile(inputFile, outputFileBin, encodingMap));
     }
 
     private static boolean writeCodecTxt(String outputFileCodeTable, Map<Integer, String> encodingMap) {
@@ -107,10 +118,11 @@ public class encoder {
     }
 
     private static StringBuilder writeBytes(StringBuilder sb, int start, int end, DataOutputStream os) {
+        // not end-start + 1.. because.. we are passign the sb.length.. which is already greater that one..so +1-1.. give end-start
         byte[] arr = new byte[(end-start)/8];
-        for(int i = 0, id = 0 ; i < (end-start) ; i+=8, id++){
+        for(int i = 0, id = 0 ; i < (end-start); i+=8, id++){
             byte temp = 0;
-            for(int j = i ; j < i+8; j++){
+            for(int j = i ; j < Math.min(i+8,end); j++){
                 temp+= (sb.charAt(j)-'0') * Math.pow(2, i+8-j-1);
             }
             arr[id] = temp;
@@ -158,6 +170,10 @@ public class encoder {
             }
             case 2:{
                 heap = new DaryHeap<TreeNode>(4);
+                break;
+            }
+            case 3:{
+                heap = new DaryHeap<TreeNode>(4, 3);
                 break;
             }
             default: break;
