@@ -10,13 +10,16 @@ import java.util.*;
 
 public class encoder {
 //    private static String inputFile = "sample_input_small.txt";
-    private static String inputFile = "../sample2/sample_input_large.txt";
+//    private static String inputFile = "../sample2/sample_input_large.txt";
+    private static String inputFile = "src/input.txt";
     private static String outputFileBin = "encoded.bin";
     private static String outputFileCodeTable = "code_table.txt";
     
     public static void main(String[] args) throws FileNotFoundException {
+        long encodingStart = System.currentTimeMillis();
         if(args.length != 1){
             System.err.println("Args length should be 1.. found..: "+args.length);
+            System.exit(1);
         }else inputFile = args[0];
         HashMap<Integer, Integer> fmap = new HashMap<>();
         Scanner sc = new Scanner(new FileInputStream(inputFile));
@@ -26,45 +29,12 @@ public class encoder {
             fmap.put(key, fmap.getOrDefault(key, 0) + 1);
         }
         sc.close();
-//        for(int keyy : fmap.keySet()) System.out.format("%d %d\n", keyy, fmap.get(keyy));
+
         System.out.println("Freq Map Built");
         TreeNode root = null;
-        
-        int iterations = 1;
-        long start, end;
+//        root = performanceAnalysis(fmap, root);
+        root = constructHuffmanTree(fmap, 0);
 
-//        System.out.println("Time Taken by 4-ary Heap:....");
-//        start = System.currentTimeMillis();
-//        for (int i = 0; i < iterations; i++) {
-//            root = constructHuffmanTree(fmap, 2);
-//        }
-//        end = System.currentTimeMillis();
-//        System.out.println((end-start)/(1000.0*iterations) + " seconds");
-        
-        System.out.print("Time Taken by 4-ary CACHEOPTIMIZED Heap:...");
-        start = System.currentTimeMillis();
-        for (int i = 0; i < iterations; i++) {
-            root = constructHuffmanTree(fmap, 3);
-        }
-        end = System.currentTimeMillis();
-        System.out.println((end-start)/(1000.0*iterations) + " seconds");
-
-//        System.out.println("Time Taken by Binary Heap:...");
-//        start = System.currentTimeMillis();
-//        for (int i = 0; i < iterations; i++) {
-//            root = constructHuffmanTree(fmap, 1);
-//        }
-//        end = System.currentTimeMillis();
-//        System.out.println((end-start)/(1000.0*iterations) + " seconds");
-        
-//        System.out.print("Time Taken by pairing Heap:...");
-//        start = System.currentTimeMillis();
-//        for (int i = 0; i < iterations; i++) {
-//            root = constructHuffmanTree(fmap, 0);
-//        }
-//        end = System.currentTimeMillis();
-//        System.out.println((end-start)/(1000.0*iterations) + " seconds");
-        
         
         System.out.println("Huffman Tree Built");
 
@@ -72,6 +42,48 @@ public class encoder {
         System.out.print("Writing Binary and CodeTable.txt to the path.....");
         writeToOutputFile(inputFile, outputFileBin, outputFileCodeTable, encodingMap);
         System.out.println("Encoding Done!");
+        System.out.println("Total Time taken : "+ (System.currentTimeMillis() - encodingStart)/1000.0);
+    }
+
+    private static TreeNode performanceAnalysis(HashMap<Integer, Integer> fmap, TreeNode root) {
+        int iterations = 1;
+        long start, end;
+        for(int k = 0 ; k  < 10; k++){
+            
+    //        System.out.print("Time Taken by 4-ary Heap:....");
+            start = System.currentTimeMillis();
+            for (int i = 0; i < iterations; i++) {
+                root = constructHuffmanTree(fmap, 2);
+            }
+            end = System.currentTimeMillis();
+            System.out.print((end-start)/(1000.0*iterations) + "\t");
+            
+    //        System.out.print("Time Taken by 4-ary CACHEOPTIMIZED Heap:...");
+            start = System.currentTimeMillis();
+            for (int i = 0; i < iterations; i++) {
+                root = constructHuffmanTree(fmap, 3);
+            }
+            end = System.currentTimeMillis();
+            System.out.print((end-start)/(1000.0*iterations) + "\t");
+    
+    //        System.out.print("Time Taken by pairing Heap:...");
+            start = System.currentTimeMillis();
+            for (int i = 0; i < iterations; i++) {
+                root = constructHuffmanTree(fmap, 0);
+            }
+            end = System.currentTimeMillis();
+            System.out.print((end-start)/(1000.0*iterations) + "\t");
+    
+            
+            //        System.out.print("Time Taken by Binary Heap:...");
+            start = System.currentTimeMillis();
+            for (int i = 0; i < iterations; i++) {
+                root = constructHuffmanTree(fmap, 1);
+            }
+            end = System.currentTimeMillis();
+            System.out.print((end-start)/(1000.0*iterations) + "\n");
+        }
+        return root;
     }
 
     private static Boolean writeToOutputFile(String inputFile, String outputFileBin, String outputFileCodeTable, Map<Integer, String> encodingMap) throws FileNotFoundException {

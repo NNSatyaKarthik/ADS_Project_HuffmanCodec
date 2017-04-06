@@ -13,16 +13,17 @@ public class decoder {
     private static String inputFileCodeTable = "code_table.txt";
     private static String outputFile = "decoded.txt";
 //    private static String outputFileExpected = "../sample1/sample_input_small.txt";
-    private static String outputFileExpected = "../sample2/sample_input_large.txt";
+//    private static String outputFileExpected = "../sample2/sample_input_large.txt";
     
     public static void main(String[] args) throws FileNotFoundException {
         // TODO make this 2.. instead of three... adn remove the last argument.. and consistency check mehtod.
-        if(args.length != 3){
+        if(args.length != 2){
             System.err.print("Expected args length of 2.. but found..: "+args.length+"...");
+            System.exit(1);
         }else{
             inputFileBin = args[0];
             inputFileCodeTable = args[1];
-            outputFileExpected = args[2];
+//            outputFileExpected = args[2];
         }
         HashMap<String, Integer> encodingMap = new HashMap<>();
         System.out.print("Building Map of Codec to Int..");
@@ -38,20 +39,18 @@ public class decoder {
         TreeNode root = new TreeNode();
         constructDecodeTree(root, encodingMap); // root is populated with the tree
         
-        StringBuilder sb = new StringBuilder();
-//        printTree(root, sb);
         System.out.println("..Done");
         System.out.print("Deocding data & Writing To Ouput.....");
         //TODO read binary file byte by byte.. and then write it to the output file  which should be same as input file.
         decodeData(root, inputFileBin, outputFile, encodingMap);
         System.out.println("Done");
-        // consistency check..
-        System.out.print("Checking Consistency.......");
-        if(!consistencyCheck(outputFileExpected, outputFile)){
-            System.err.println("failed.. output expected and actual are not equal...");
-        }else{
-            System.out.println("PASS..");
-        }
+//        // consistency check..
+//        System.out.print("Checking Consistency.......");
+//        if(!consistencyCheck(outputFileExpected, outputFile)){
+//            System.err.println("failed.. output expected and actual are not equal...");
+//        }else{
+//            System.out.println("PASS..");
+//        }
     }
 
     private static boolean consistencyCheck(String outputFileExpected, String outputFile) {

@@ -14,3 +14,9 @@ classes: $(CLASSES:.java=.class)
 
 clean:
 	$(RM) *.class
+	$(RM) ads.tar.gz
+
+zip: clean $(CLASSES) Makefile
+	tar -cvf ads.tar $(CLASSES) Makefile NagaSatyaKarthik_narikimilli_77656111_ads_Report.pdf
+	gzip ads.tar
+

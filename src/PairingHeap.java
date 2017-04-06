@@ -109,40 +109,42 @@ public class PairingHeap<T extends Comparable<T>> extends Heaps<T>{
             if(left.right != null){
                 right = left.right;
                 next = right.right;
-                
-                right.left = null; 
-                right.right = null;
-                left.right = null;
-                left.left = null;
-                
-                if(left.compareTo(right) == -1){
-                    left.insert(right);
-                    childList.add(left);
-                }else{
-                    right.insert(left);
-                    childList.add(right);
-                }
             }else{
-                next = left.right;
-                
-                left.right = null;
-                left.left = null;
-
-                childList.add(left);
+                next = null;    
+                right = left;
+                if(childList.size() == 0) {
+                    left.right = null;
+                    left.left = null;
+                    childList.add(left);
+                    break;
+                }
+                left = childList.remove(childList.size()-1);
             }
-            ptr = next;   
+            right.left = null; 
+            right.right = null;
+            left.right = null;
+            left.left = null;
+            
+            if(left.compareTo(right) == -1){
+                left.insert(right);
+                childList.add(left);
+            }else{
+                right.insert(left);
+                childList.add(right);
+            }
+            ptr = next;
         }
         
         //pass2
-        while(childList.size() > 1){
-            left = childList.remove(0);
-            right = childList.remove(0);
+        while(childList.size()>1){
+            right = childList.remove(childList.size()-1);
+            left = childList.remove(childList.size()-1);
             if(left.compareTo(right) == -1){
                 left.insert(right);
-                childList.add(0, left);
+                childList.add(left);
             }else{
                 right.insert(left);
-                childList.add(0, right);
+                childList.add(right);
             }
         }
         return childList.remove(0);
